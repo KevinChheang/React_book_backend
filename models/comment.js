@@ -10,7 +10,8 @@ class Comment {
      * Returns [{ id, username, isbn, comment }]
      * */
     static async getAll() {
-        let commentsRes = await db.query(`SELECT id,
+        let commentsRes = await db.query(`
+                                    SELECT id,
                                            username,
                                            isbn,
                                            comment

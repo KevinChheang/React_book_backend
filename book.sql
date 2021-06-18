@@ -16,3 +16,4 @@ CREATE DATABASE react_book_test;
 \connect react_book_test
 
 \i book-schema.sql
+\i book-seed.sql

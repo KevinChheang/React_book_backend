@@ -1,7 +1,7 @@
 "use strict"
 
 const db = require("../db");
-const {BadRequestError, NotFoundError} = require("../expressError");
+const { NotFoundError} = require("../expressError");
 
 /* Related functions for books. */
 
@@ -20,6 +20,7 @@ class Book {
                     publisher,
                     year_published AS yearPublished,
                     pages,
+                    description,
                     img_url,
                     link
             FROM books`;
@@ -60,6 +61,8 @@ class Book {
                     img_url,
                     link
             FROM books WHERE isbn=$1`, [isbn]);
+
+        if(!bookRes.rows[0]) throw new NotFoundError(`No book with isbn ${isbn}`);
 
         return bookRes.rows[0];
     }

@@ -24,6 +24,8 @@ class Rating {
                                  FROM likes_dislikes
                                  WHERE is_dislike = $1 AND isbn = $2`, [true, isbn]);
 
+        if(!likesRes.rows[0]) throw new NotFoundError(`No ratings found with isbn: ${isbn}`);
+
         return {"likes": likesRes.rows, "dislikes": dislikesRes.rows};
     }
 }

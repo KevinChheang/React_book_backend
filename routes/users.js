@@ -28,8 +28,9 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
   }
 });
 
-/** POST /[username]/books/[id] => { fav_books }
+/** POST /[username]/books/[isbn] => { fav_books }
  *
+ * Add book to fav list
  * Returns {"added": isbn}
  *
  * Authorization required: must login
@@ -44,8 +45,9 @@ router.post("/:username/books/:isbn", async function(req, res, next) {
     }
 });
 
-/** DELETE /[username]/books/[id] => { fav_books }
+/** DELETE /[username]/books/[isbn] => { fav_books }
  *
+ * Delete book from fav list
  * Returns {"deleted"}
  *
  * Authorization required: must login
@@ -54,7 +56,7 @@ router.delete("/:username/books/:isbn", async function(req, res, next) {
   try {
     await User.deleteFavBook(req.params.isbn);
 
-    return res.json({"fav-book": "deleted"});
+    return res.json({"deleted": req.params.isbn});
   } catch (error) {
     return next(error);
   }
@@ -78,6 +80,7 @@ router.get("/favBook/:username", ensureCorrectUser, async function (req, res, ne
 
 /** POST /[username]/ratings/[isbn]/like => { like }
  *
+ * Add like to book
  * Returns {like}
  *
  * Authorization required: must login
@@ -110,6 +113,7 @@ router.post("/:username/ratings/:isbn/like", async function(req, res, next) {
 
 /** POST /[username]/books/[isbn]/comment => { comments }
  *
+ * Add comment for book
  * Returns {"added": isbn}
  *
  * Authorization required: must login

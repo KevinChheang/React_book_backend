@@ -97,18 +97,18 @@ class User {
    * Returns [{ username, first_name, last_name, email }, ...]
    **/
 
-  static async findAll() {
-    const result = await db.query(
-          `SELECT username,
-                  first_name AS "firstName",
-                  last_name AS "lastName",
-                  email"
-           FROM users
-           ORDER BY username`,
-    );
+  // static async findAll() {
+  //   const result = await db.query(
+  //         `SELECT username,
+  //                 first_name AS "firstName",
+  //                 last_name AS "lastName",
+  //                 email"
+  //          FROM users
+  //          ORDER BY username`,
+  //   );
 
-    return result.rows;
-  }
+  //   return result.rows;
+  // }
 
   /** Given a username, return data about user.
    *
@@ -156,11 +156,15 @@ class User {
 
     if(!preCheckUser.rows[0]) throw new NotFoundError(`No user found with username: ${username}`);
 
-    // add to fab_books table
-    await db.query(
+    // add to fav_books table
+    const favBook = await db.query(
       `INSERT INTO fav_books (username, isbn)
-      VALUES ($1, $2)`, [username, isbn]);
+       VALUES ($1, $2)
+       RETURNING username, isbn`, [username, isbn]);
+
+    return favBook.rows[0];
   }
+
   /** Delete a book from fav: update db, returns undefined.
    *
    * - username: username adding the book
@@ -178,6 +182,8 @@ class User {
     // delete from fab_books table
     await db.query(
       `DELETE FROM fav_books WHERE isbn = $1`, [isbn]);
+
+    return ({"deleted": isbn});
   }
 
   /** Given a username, return user's fav books.
@@ -198,7 +204,7 @@ class User {
 
     const favBooksRes = await db.query(
       `SELECT u.username, b.isbn, b.title, b.subtitle, 
-              b.author, b.publisher, b.pages, b.year_published, b.img_url, b.link
+              b.author, b.publisher, b.pages, b.year_published, b.description, b.img_url, b.link
        FROM users AS u
        LEFT JOIN fav_books AS fb
        ON u.username = fb.username
@@ -215,9 +221,12 @@ class User {
    * - isbn: book isbn
    **/
    static async addLike(username, isbn) {
-    await db.query(
+    const like = await db.query(
       `INSERT INTO likes_dislikes (username, isbn, is_like)
-      VALUES ($1, $2, $3)`, [username, isbn, true]);
+       VALUES ($1, $2, $3)
+       RETURNING username, isbn, is_like`, [username, isbn, true]);
+    
+    return like.rows[0];
   }
 
   /** Add a dislike to table: : update db, returns undefined.
@@ -226,9 +235,12 @@ class User {
    * - isbn: book isbn
    **/
    static async addDislike(username, isbn) {
-    await db.query(
+    const dislike = await db.query(
       `INSERT INTO likes_dislikes (username, isbn, is_dislike)
-      VALUES ($1, $2, $3)`, [username, isbn, true]);
+       VALUES ($1, $2, $3)
+       RETURNING username, isbn, is_dislike`, [username, isbn, true]);
+
+    return dislike.rows[0];
   }
 
   /** Add a comment to table: : update db, returns undefined.
@@ -238,9 +250,12 @@ class User {
    * - comment: comment itself
    **/
    static async addComment(username, isbn, comment) {
-    await db.query(
+    const addedComment = await db.query(
       `INSERT INTO comments (username, isbn, comment)
-      VALUES ($1, $2, $3)`, [username, isbn, comment]);
+       VALUES ($1, $2, $3)
+       RETURNING username, isbn, comment`, [username, isbn, comment]);
+
+    return addedComment.rows[0];
   }
 }
 

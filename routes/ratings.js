@@ -16,6 +16,7 @@ const { BadRequestError } = require("../expressError");
 router.get("/:isbn", async function(req, res, next) {
     try {
         const ratingsRes = await Rating.getRatings(req.params.isbn);
+
         return res.json({ratingsRes});
     } catch (error) {
         next(error);

@@ -6,7 +6,6 @@ const express = require("express");
 const router = new express.Router();
 
 const Book = require("../models/book");
-const { BadRequestError } = require("../expressError");
 
 /** GET /  =>
  *   { books: [ { isbn, title, subtitle, author, publisher, year_published, pages, img_url, link } }
